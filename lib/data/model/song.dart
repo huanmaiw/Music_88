@@ -29,7 +29,7 @@ class Song {
   String artist;
   String source;
   String image;
-  Duration duration;  // Sử dụng Duration thay vì int
+  Duration duration;
 
   @override
   String toString() {
@@ -44,7 +44,7 @@ class Song {
   @override
   int get hashCode => id.hashCode;
 
-  // Chuyển đối tượng Song thành Map (Json)
+
   Map<String, dynamic> toJson() {
     return {
       'id': id,
