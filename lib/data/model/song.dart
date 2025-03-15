@@ -8,18 +8,20 @@ class Song {
     required this.image,
     required this.duration,
   });
-    factory Song.fromJson(Map<String, dynamic>map){
-      return Song(
-        id: map['id'],
-        title: map['title'],
-        album: map['album'],
-        artist: map['artist'],
-        source: map['source'],
-        image: map['image'],
-        duration: map['duration'],
 
-      );
-    }
+  // Factory constructor để tạo đối tượng từ Map
+  factory Song.fromJson(Map<String, dynamic> map) {
+    return Song(
+      id: map['id'],
+      title: map['title'],
+      album: map['album'],
+      artist: map['artist'],
+      source: map['source'],
+      image: map['image'],
+      // Chuyển duration từ số giây sang Duration
+      duration: Duration(seconds: map['duration']),
+    );
+  }
 
   String id;
   String title;
@@ -27,7 +29,7 @@ class Song {
   String artist;
   String source;
   String image;
-  int duration;
+  Duration duration;  // Sử dụng Duration thay vì int
 
   @override
   String toString() {
@@ -37,10 +39,12 @@ class Song {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is Song && runtimeType == other.runtimeType && id == other.id;
+          other is Song && runtimeType == other.runtimeType && id == other.id;
 
   @override
   int get hashCode => id.hashCode;
+
+  // Chuyển đối tượng Song thành Map (Json)
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -49,10 +53,8 @@ class Song {
       'artist': artist,
       'source': source,
       'image': image,
-      'duration': duration,
+      // Lưu duration dưới dạng số giây
+      'duration': duration.inSeconds,
     };
   }
-
-
-
 }

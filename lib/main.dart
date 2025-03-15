@@ -1,26 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:music_app/ChucNang/home.dart';
-
-
+import 'package:provider/provider.dart';
+import 'ChucNang/home.dart';
+import 'data/source/favorite_provider.dart';
 
 void main() {
   runApp(
-      const MyApp(),
+    ChangeNotifierProvider(
+      create: (context) => FavoriteProvider(),
+      child: MyApp(),
+    ),
   );
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
       home: MusicApp(),
     );
   }

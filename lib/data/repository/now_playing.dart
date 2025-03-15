@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-
+import 'package:provider/provider.dart';
 import '../../data/model/song.dart';
-import 'player_controls.dart';
+import '../source/favorite_provider.dart';
 import 'progress_bar.dart';
 import 'song_info.dart';
 
@@ -76,32 +74,11 @@ class _NowPlayingPageState extends State<NowPlayingPage> with SingleTickerProvid
   }
 
   Future<void> _checkIfFavorite() async {
-    final prefs = await SharedPreferences.getInstance();
-    final favoriteList = prefs.getStringList('favorite_songs') ?? [];
+    final provider = Provider.of<FavoriteProvider>(context, listen: false);
     setState(() {
-      isFavorite = favoriteList.contains(jsonEncode(widget.playingSong.toJson()));
+      isFavorite = provider.favoriteSongs.contains(widget.playingSong);
     });
   }
-
-  Future<void> _toggleFavorite() async {
-    final prefs = await SharedPreferences.getInstance();
-    List<String> favoriteList = prefs.getStringList('favorite_songs') ?? [];
-
-    final songJson = jsonEncode(widget.songs[_currentIndex].toJson());
-
-    setState(() {
-      if (isFavorite) {
-        favoriteList.remove(songJson);
-        isFavorite = false;
-      } else {
-        favoriteList.add(songJson);
-        isFavorite = true;
-      }
-    });
-
-    await prefs.setStringList('favorite_songs', favoriteList);
-  }
-
 
   void _playSong() async {
     await _audioPlayer.stop();
@@ -165,6 +142,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<FavoriteProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Now Playing'),
@@ -211,7 +189,10 @@ class _NowPlayingPageState extends State<NowPlayingPage> with SingleTickerProvid
                     isFavorite ? Icons.favorite : Icons.favorite_border,
                     color: isFavorite ? Colors.red : Colors.black87,
                   ),
-                  onPressed: _toggleFavorite,
+                  onPressed: () {
+                    provider.toggleFavorite(widget.playingSong);
+                    _checkIfFavorite(); // Update the favorite status
+                  },
                 ),
 
                 // Nút Previous

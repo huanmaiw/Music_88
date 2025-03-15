@@ -1,7 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'favorite_main.dart';
+
+import '../data/model/favoriteM.dart';
 
 class AccountTab extends StatefulWidget {
   const AccountTab({super.key});
