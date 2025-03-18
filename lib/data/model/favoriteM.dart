@@ -1,29 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import '../repository/now_playing.dart';
 import '../source/favorite_provider.dart';
 
-class FavoriteSongsPage extends StatelessWidget {
+class FavoritesScreen extends StatelessWidget {
+  const FavoritesScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    final favoriteSongs = Provider.of<FavoriteProvider>(context).favoriteSongs;
+    final favoriteProvider = Provider.of<FavoriteProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Bài hát yêu thích'),
+        title: const Text('Favorite Songs'),
       ),
-      body: favoriteSongs.isEmpty
-          ? Center(child: Text('Chưa có bài hát yêu thích nào!'))
+      body: favoriteProvider.favoriteSongs.isEmpty
+          ? const Center(child: Text('No favorite songs yet!'))
           : ListView.builder(
-        itemCount: favoriteSongs.length,
+        itemCount: favoriteProvider.favoriteSongs.length,
         itemBuilder: (context, index) {
-          final song = favoriteSongs[index];
+          final song = favoriteProvider.favoriteSongs[index];
           return ListTile(
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage(song.image),
+            ),
             title: Text(song.title),
             subtitle: Text(song.artist),
-            leading: Image.network(song.image),
+            trailing: IconButton(
+              icon: const Icon(Icons.favorite, color: Colors.red),
+              onPressed: () {
+                favoriteProvider.toggleFavorite(song); // Xóa khỏi yêu thích
+              },
+            ),
             onTap: () {
-              // Điều hướng đến màn hình phát nhạc
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NowPlaying(
+                    playingSong: song,
+                    songs: favoriteProvider.favoriteSongs,
+                  ),
+                ),
+              );
             },
           );
         },

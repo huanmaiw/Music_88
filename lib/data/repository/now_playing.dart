@@ -39,6 +39,22 @@ class _NowPlayingPageState extends State<NowPlayingPage> with SingleTickerProvid
   bool isRepeatingAll = false;
   bool isFavorite = false;
 
+  Future<void> _checkIfFavorite() async {
+    final provider = Provider.of<FavoriteProvider>(context, listen: false);
+    setState(() {
+      isFavorite = provider.isFavorite(widget.songs[_currentIndex]);
+    });
+  }
+
+  // Moved _playSong outside of initState
+  void _playSong() async {
+    await _audioPlayer.stop();
+    await _audioPlayer.play(UrlSource(widget.songs[_currentIndex].source));
+    setState(() {
+      isPlaying = true;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
@@ -68,24 +84,10 @@ class _NowPlayingPageState extends State<NowPlayingPage> with SingleTickerProvid
       } else {
         _playNext();
       }
-      _checkIfFavorite();
+      _checkIfFavorite(); // Kiểm tra trạng thái yêu thích khi bài hát thay đổi
     });
 
-  }
-
-  Future<void> _checkIfFavorite() async {
-    final provider = Provider.of<FavoriteProvider>(context, listen: false);
-    setState(() {
-      isFavorite = provider.favoriteSongs.contains(widget.playingSong);
-    });
-  }
-
-  void _playSong() async {
-    await _audioPlayer.stop();
-    await _audioPlayer.play(UrlSource(widget.songs[_currentIndex].source));
-    setState(() {
-      isPlaying = true;
-    });
+    _checkIfFavorite(); // Kiểm tra ngay khi khởi tạo
   }
 
   void _playNext() {
@@ -142,7 +144,6 @@ class _NowPlayingPageState extends State<NowPlayingPage> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<FavoriteProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Now Playing'),
@@ -190,8 +191,9 @@ class _NowPlayingPageState extends State<NowPlayingPage> with SingleTickerProvid
                     color: isFavorite ? Colors.red : Colors.black87,
                   ),
                   onPressed: () {
-                    provider.toggleFavorite(widget.playingSong);
-                    _checkIfFavorite(); // Update the favorite status
+                    final provider = Provider.of<FavoriteProvider>(context, listen: false);
+                    provider.toggleFavorite(widget.songs[_currentIndex]);
+                    _checkIfFavorite(); // Cập nhật giao diện sau khi thay đổi
                   },
                 ),
 
@@ -204,7 +206,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> with SingleTickerProvid
                 // Nút Play / Pause
                 FloatingActionButton(
                   onPressed: _togglePlayPause,
-                  backgroundColor: Colors.deepPurple[400], // Màu gi
+                  backgroundColor: Colors.deepPurple[400], // Màu nền
                   shape: const CircleBorder(), // Đảm bảo nút là hình tròn
                   child: Icon(
                     isPlaying ? Icons.pause : Icons.play_arrow,
@@ -226,8 +228,8 @@ class _NowPlayingPageState extends State<NowPlayingPage> with SingleTickerProvid
                         ? Icons.repeat_one
                         : (isRepeatingAll ? Icons.repeat : Icons.repeat_outlined),
                     color: isRepeatingOne
-                        ? Colors.red  // Màu xanh cho Repeat One
-                        : (isRepeatingAll ? Colors.red : Colors.black), // Màu xanh dương cho Repeat All
+                        ? Colors.red  // Màu đỏ cho Repeat One
+                        : (isRepeatingAll ? Colors.red : Colors.black), // Màu đỏ cho Repeat All
                   ),
                   onPressed: _toggleRepeatMode,
                 ),
@@ -238,7 +240,6 @@ class _NowPlayingPageState extends State<NowPlayingPage> with SingleTickerProvid
       ),
     );
   }
-
 
   // Hàm format thời gian thành chuỗi "mm:ss"
   String _formatDuration(Duration duration) {

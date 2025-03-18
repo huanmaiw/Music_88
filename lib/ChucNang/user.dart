@@ -134,7 +134,8 @@ class _AccountTabState extends State<AccountTab> {
                   leading: Icon(Icons.favorite, color: Colors.red),
                   title: Text("Bài hát yêu thích"),
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (_)=>FavoriteSongsPage()));
+                    Navigator.push(context, MaterialPageRoute(
+                        builder: (_)=>FavoritesScreen()));
                   },
                 ),
                 ListTile(
