@@ -12,9 +12,11 @@ class AccountTab extends StatefulWidget {
 }
 
 class _AccountTabState extends State<AccountTab> {
+  bool isLoggedIn = false; // Trạng thái đăng nhập
   String userName = "Cao Hồi";
   String userEmail = "caominhchien@gmail.com";
-  String avatarUrl = "https://sohanews.sohacdn.com/160588918557773824/2022/2/18/eimi-fukada-khoe-nhan-cuoi-khien-nhieu-anh-em-vun-vo-1-16451569810551833965014.jpg";
+  String avatarUrl =
+      "https://sohanews.sohacdn.com/160588918557773824/2022/2/18/eimi-fukada-khoe-nhan-cuoi-khien-nhieu-anh-em-vun-vo-1-16451569810551833965014.jpg";
 
   final _userNameController = TextEditingController();
   final _userEmailController = TextEditingController();
@@ -23,13 +25,11 @@ class _AccountTabState extends State<AccountTab> {
   @override
   void initState() {
     super.initState();
-    // Initialize the controllers with current values
     _userNameController.text = userName;
     _userEmailController.text = userEmail;
   }
 
   void _editProfile() {
-    // Show dialog to edit profile
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -40,24 +40,18 @@ class _AccountTabState extends State<AccountTab> {
             children: [
               TextField(
                 controller: _userNameController,
-                decoration: InputDecoration(
-                  labelText: "Tên",
-                ),
+                decoration: InputDecoration(labelText: "Tên"),
               ),
               SizedBox(height: 10),
               TextField(
                 controller: _userEmailController,
-                decoration: InputDecoration(
-                  labelText: "ID",
-                ),
+                decoration: InputDecoration(labelText: "ID"),
               ),
             ],
           ),
           actions: [
             TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Đóng hộp thoại
-              },
+              onPressed: () => Navigator.pop(context),
               child: Text("Hủy"),
             ),
             TextButton(
@@ -66,8 +60,9 @@ class _AccountTabState extends State<AccountTab> {
                   userName = _userNameController.text;
                   userEmail = _userEmailController.text;
                 });
-                Navigator.pop(context); // Đóng hộp thoại
-                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Thông tin đã được cập nhật!")));
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context)
+                    .showSnackBar(SnackBar(content: Text("Thông tin đã được cập nhật!")));
               },
               child: Text("Lưu"),
             ),
@@ -78,8 +73,11 @@ class _AccountTabState extends State<AccountTab> {
   }
 
   void _logout() {
-    // Xử lý đăng xuất
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Nghe nhạc thì cần đéo gì tài khoản !")));
+    setState(() {
+      isLoggedIn = false;
+    });
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text("Bạn đã đăng xuất!")));
   }
 
   Future<void> _pickImage() async {
@@ -89,24 +87,78 @@ class _AccountTabState extends State<AccountTab> {
     if (pickedFile != null) {
       setState(() {
         _imageFile = pickedFile;
-        avatarUrl = pickedFile.path; // Cập nhật ảnh đại diện với ảnh đã chọn
+        avatarUrl = pickedFile.path;
       });
     }
+  }
+
+  void _showLoginBottomSheet() {
+    showModalBottomSheet(
+      context: context,
+      isDismissible: true,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.all(16),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset('assets/zing.jpg', height: 150),
+              SizedBox(height: 16),
+              Text(
+                'Đăng nhập',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isLoggedIn = true;
+                  });
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blue,
+                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.account_circle, color: Colors.white),
+                    SizedBox(width: 8),
+                    Text('Đăng nhập qua Zalo', style: TextStyle(color: Colors.white)),
+                  ],
+                ),
+              ),
+              SizedBox(height: 8),
+              Text(
+                'Bằng cách đăng nhập, bạn đã đồng ý với Điều khoản sử dụng của Zing MP3',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Tài khoản"),
-        centerTitle: true,
-      ),
-      body: Column(
+      appBar: AppBar(title: Text("Tài khoản"), centerTitle: true),
+      body: isLoggedIn
+          ? Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SizedBox(height: 20),
           GestureDetector(
-            onTap: _pickImage, // Khi nhấn vào ảnh sẽ chọn ảnh mới
+            onTap: _pickImage,
             child: CircleAvatar(
               radius: 50,
               backgroundImage: _imageFile != null
@@ -121,9 +173,10 @@ class _AccountTabState extends State<AccountTab> {
           ),
           Text(userEmail, style: TextStyle(color: Colors.grey)),
           SizedBox(height: 20),
-          ElevatedButton.icon(style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
             onPressed: _editProfile,
-            icon: Icon(Icons.edit,color: Colors.white,),
+            icon: Icon(Icons.edit, color: Colors.white),
             label: Text("Chỉnh sửa thông tin"),
           ),
           SizedBox(height: 20),
@@ -134,8 +187,8 @@ class _AccountTabState extends State<AccountTab> {
                   leading: Icon(Icons.favorite, color: Colors.red),
                   title: Text("Bài hát yêu thích"),
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(
-                        builder: (_)=>FavoritesScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => FavoritesScreen()));
                   },
                 ),
                 ListTile(
@@ -147,6 +200,12 @@ class _AccountTabState extends State<AccountTab> {
             ),
           ),
         ],
+      )
+          : Center(
+        child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
+          onPressed: _showLoginBottomSheet,
+          child: Text("Đăng nhập ngay"),
+        ),
       ),
     );
   }

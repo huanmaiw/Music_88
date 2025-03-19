@@ -87,11 +87,13 @@ class _HomeTabPageState extends State<HomeTabPage> {
     super.initState();
   }
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: getBody(),
     );
   }
+  @override
   void dispose(){
     _viewModel.songStream.close();
     super.dispose();
@@ -179,7 +181,7 @@ class _HomeTabPageState extends State<HomeTabPage> {
 }
 class _SongItemSection extends StatelessWidget {
 
-  _SongItemSection({
+  const _SongItemSection({
     required this.parent,
     required this.song,
 });
@@ -195,12 +197,12 @@ class _SongItemSection extends StatelessWidget {
       ),
       leading: ClipRRect(
         borderRadius: BorderRadius.circular(8),
-        child: FadeInImage.assetNetwork(placeholder:'asset/thimau.jpg',
+        child: FadeInImage.assetNetwork(placeholder:'',
           image: song.image,
           width: 48,
           height: 48,
           imageErrorBuilder: (context, error, stackTrace){
-            return Image.asset('asset/thimau.jpg',
+            return Image.asset('',
               width: 48,
               height: 48,
              );
