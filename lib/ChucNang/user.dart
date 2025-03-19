@@ -1,7 +1,9 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
+import '../Account/login.dart';
 import '../data/model/favoriteM.dart';
 
 class AccountTab extends StatefulWidget {
@@ -12,7 +14,7 @@ class AccountTab extends StatefulWidget {
 }
 
 class _AccountTabState extends State<AccountTab> {
-  bool isLoggedIn = false; // Trạng thái đăng nhập
+  bool isLoggedIn = false;
   String userName = "Cao Hồi";
   String userEmail = "caominhchien@gmail.com";
   String avatarUrl =
@@ -21,14 +23,21 @@ class _AccountTabState extends State<AccountTab> {
   final _userNameController = TextEditingController();
   final _userEmailController = TextEditingController();
   XFile? _imageFile;
-
   @override
   void initState() {
     super.initState();
-    _userNameController.text = userName;
-    _userEmailController.text = userEmail;
+    _checkLoginStatus();
   }
-
+  void _checkLoginStatus() {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      setState(() {
+        isLoggedIn = true;
+        userName = user.displayName ?? "Người dùng";
+        userEmail = user.email ?? "Không có email";
+      });
+    }
+  }
   void _editProfile() {
     showDialog(
       context: context,
@@ -92,62 +101,6 @@ class _AccountTabState extends State<AccountTab> {
     }
   }
 
-  void _showLoginBottomSheet() {
-    showModalBottomSheet(
-      context: context,
-      isDismissible: true,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset('assets/zing.jpg', height: 150),
-              SizedBox(height: 16),
-              Text(
-                'Đăng nhập',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    isLoggedIn = true;
-                  });
-                  Navigator.pop(context);
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.account_circle, color: Colors.white),
-                    SizedBox(width: 8),
-                    Text('Đăng nhập qua Zalo', style: TextStyle(color: Colors.white)),
-                  ],
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Bằng cách đăng nhập, bạn đã đồng ý với Điều khoản sử dụng của Zing MP3',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -203,10 +156,13 @@ class _AccountTabState extends State<AccountTab> {
       )
           : Center(
         child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
-          onPressed: _showLoginBottomSheet,
+          onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+          },
           child: Text("Đăng nhập ngay"),
         ),
       ),
     );
   }
+
 }
