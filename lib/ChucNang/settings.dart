@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:music_app/ChucNang/rate.dart';
 import 'package:music_app/ChucNang/tems.dart';
 import 'package:music_app/ChucNang/temsss.dart';
+import 'helper.dart';
 
 class SettingsTab extends StatelessWidget {
   const SettingsTab({super.key});
@@ -56,7 +57,7 @@ class SettingsTab extends StatelessWidget {
   void _navigateToHelpAndReport(BuildContext context) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => HelpAndReportScreen()),
+      MaterialPageRoute(builder: (context) => Helper()),
     );
   }
 
@@ -72,17 +73,6 @@ class SettingsTab extends StatelessWidget {
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => TermsOfServiceScreenss()),
-    );
-  }
-}
-
-// Placeholder screens for navigation
-class HelpAndReportScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("Trợ giúp và báo lỗi")),
-      body: Center(child: Text("Help and Report Screen")),
     );
   }
 }
