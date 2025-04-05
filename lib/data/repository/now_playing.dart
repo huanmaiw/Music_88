@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:provider/provider.dart';
+import '../../ChucNang/recently_played_service.dart';
 import '../../data/model/song.dart';
 import '../source/favorite_provider.dart';
 import 'progress_bar.dart';
@@ -58,6 +59,7 @@ class _NowPlayingPageState extends State<NowPlayingPage> with SingleTickerProvid
   @override
   void initState() {
     super.initState();
+    RecentlyPlayedService().addToRecentlyPlayed(widget.playingSong);
     _audioPlayer = AudioPlayer();
     _currentIndex = widget.songs.indexOf(widget.playingSong);
 

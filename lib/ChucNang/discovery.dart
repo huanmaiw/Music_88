@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../data/model/song.dart';
 import '../data/repository/now_playing.dart';
 import '../data/source/source.dart';
@@ -11,16 +14,34 @@ class DiscoveryTab extends StatefulWidget {
 }
 
 class _DiscoveryTabState extends State<DiscoveryTab> {
+  List<Song> _recentSongs = [];
+
   List<Song> _songs = [];
   List<Song> _filteredSongs = [];
   bool _isLoading = true;
   bool _hasError = false;
-
+  Future<void> _saveRecentSongs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final recentJson = _recentSongs.map((song) => jsonEncode(song.toJson())).toList();
+    await prefs.setStringList('recent_songs', recentJson);
+  }
+  Future<void> _loadRecentSongs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final recentJson = prefs.getStringList('recent_songs') ?? [];
+    setState(() {
+      _recentSongs = recentJson.map((jsonStr) {
+        final Map<String, dynamic> map = jsonDecode(jsonStr);
+        return Song.fromJson(map);
+      }).toList();
+    });
+  }
   @override
   void initState() {
     super.initState();
     _fetchSongs();
+    _loadRecentSongs();
   }
+
 
   Future<void> _fetchSongs() async {
     try {
@@ -62,17 +83,21 @@ class _DiscoveryTabState extends State<DiscoveryTab> {
         automaticallyImplyLeading: false,
         title: Text('Khám phá'),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(50.0),
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              onChanged: _searchSongs,
-              decoration: InputDecoration(
-                hintText: 'Search songs...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+          preferredSize: Size.fromHeight(100.0),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  onChanged: _searchSongs,
+                  decoration: InputDecoration(
+                    hintText: 'Search songs...',
+                    prefixIcon: Icon(Icons.search),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  ),
+                ),
               ),
-            ),
+            ],
           ),
         ),
       ),
