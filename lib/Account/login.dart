@@ -153,15 +153,19 @@ class _LoginScreenState extends State<LoginScreen> {
       setState(() {
         _isLoading = true;
       });
+
       User? user = await AuthService().loginWithEmailAndPassword(
         _emailController.text,
         _passwordController.text,
       );
+
       setState(() {
         _isLoading = false;
       });
+
       if (user != null) {
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>AccountTab()));
+        // ✅ Quay về màn AccountTab đã tồn tại và báo login thành công
+        Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Tài khoản hoặc mật khẩu không chính xác')),
@@ -169,4 +173,5 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     }
   }
+
 }

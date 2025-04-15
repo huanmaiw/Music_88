@@ -12,10 +12,10 @@ class FavoritesScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Favorite Songs'),
+        title: const Text('Yêu Thích'),
       ),
       body: favoriteProvider.favoriteSongs.isEmpty
-          ? const Center(child: Text('No favorite songs yet!'))
+          ? const Center(child: Text('Chưa có bài hát nào trong danh sách yêu thích.'))
           : ListView.builder(
         itemCount: favoriteProvider.favoriteSongs.length,
         itemBuilder: (context, index) {

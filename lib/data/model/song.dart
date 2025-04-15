@@ -9,17 +9,15 @@ class Song {
     required this.duration,
   });
 
-  // Factory constructor để tạo đối tượng từ Map
   factory Song.fromJson(Map<String, dynamic> map) {
     return Song(
-      id: map['id'],
-      title: map['title'],
-      album: map['album'],
-      artist: map['artist'],
-      source: map['source'],
-      image: map['image'],
-      // Chuyển duration từ số giây sang Duration
-      duration: Duration(seconds: map['duration']),
+      id: map['id']?.toString() ?? '',
+      title: map['title']?.toString() ?? '',
+      album: map['album']?.toString() ?? '',
+      artist: map['artist']?.toString() ?? '',
+      source: map['source']?.toString() ?? '',
+      image: map['image']?.toString() ?? '',
+      duration: Duration(seconds: map['duration'] as int? ?? 0),
     );
   }
 
@@ -44,7 +42,6 @@ class Song {
   @override
   int get hashCode => id.hashCode;
 
-
   Map<String, dynamic> toJson() {
     return {
       'id': id,
@@ -53,7 +50,6 @@ class Song {
       'artist': artist,
       'source': source,
       'image': image,
-      // Lưu duration dưới dạng số giây
       'duration': duration.inSeconds,
     };
   }

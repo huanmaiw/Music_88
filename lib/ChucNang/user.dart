@@ -6,6 +6,7 @@ import 'package:music_app/ChucNang/recently_played.dart';
 
 import '../Account/login.dart';
 import '../data/model/favoriteM.dart';
+import 'my_listplay.dart';
 
 class AccountTab extends StatefulWidget {
   const AccountTab({super.key});
@@ -18,7 +19,7 @@ class _AccountTabState extends State<AccountTab> {
   bool isLoggedIn = false;
   String userName = "Cao Hồi";
   String userEmail = "caominhchien@gmail.com";
-  String avatarUrl = "https://cdn-www.bluestacks.com/bs-images/34f479426e2671b12e7418f06397708a.png";
+  String avatarUrl = "https://s3.ap-southeast-1.amazonaws.com/cdn.vntre.vn/default/avatar-facebook-01-1724577427.jpg";
   final _userNameController = TextEditingController();
   final _userEmailController = TextEditingController();
   XFile? _imageFile;
@@ -105,7 +106,7 @@ class _AccountTabState extends State<AccountTab> {
     return WillPopScope(
       onWillPop: () async {
         Navigator.popUntil(context, (route) => route.isFirst);
-        return false; // Ngăn pop mặc định
+        return false;
       },
       child: Scaffold(
         appBar: AppBar(title: Text("Tài khoản"), centerTitle: true),
@@ -141,6 +142,16 @@ class _AccountTabState extends State<AccountTab> {
               child: ListView(
                 children: [
                   ListTile(
+                    leading: Icon(Icons.playlist_play, color: Colors.blue),
+                    title: Text("Tạo listplay của tôi"),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => MyListPlay()),
+                      );
+                    },
+                  ),
+                  ListTile(
                     leading: Icon(Icons.favorite, color: Colors.red),
                     title: Text("Bài hát yêu thích"),
                     onTap: () {
@@ -172,12 +183,21 @@ class _AccountTabState extends State<AccountTab> {
           ],
         )
             : Center(
-          child: ElevatedButton(style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
-            onPressed: (){
-            Navigator.push(context, MaterialPageRoute(builder: (context)=>LoginScreen()));
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.blue, foregroundColor: Colors.white),
+            onPressed: () async {
+              final result = await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => LoginScreen()),
+              );
+
+              if (result == true) {
+                _checkLoginStatus();
+              }
             },
             child: Text("Đăng nhập ngay"),
           ),
+
         ),
       ),
     );
